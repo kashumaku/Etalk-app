@@ -1,25 +1,41 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import {AppStackParams} from '../types/navigatorParams/AppStackParams'
+import { AppStackParams } from '../types/navigatorParams/AppStackParams'
 import Login from '../screens/login/Page'
 import Signup from '../screens/signup/Page'
 import HomeTabNavigator from './HomeTabNavigator'
+import OnBoarding from '../screens/onBoarding/Page'
+import { StatusBar } from 'expo-status-bar'
+import { useTheme } from '../../context/themeContext'
+import { darkTheme, lightTheme } from '../theme/color'
+import MyPostsScreen from '../screens/myPosts/page'
+import EditProfileScreen from '../screens/editProfile/page'
+import FollowersScreen from '../screens/followers/Page'
+import FollowingScreen from '../screens/following/Page'
 const Stack = createNativeStackNavigator<AppStackParams>()
 const AppStackNavigator = () => {
-  return (
-<Stack.Navigator 
-screenOptions={{
-    headerShown: false,
-    animation: 'slide_from_right'
-    
-}}
->
-<Stack.Screen name='HomeTab' component={HomeTabNavigator}/>
-    <Stack.Screen name='Login' component={Login}/>
-    <Stack.Screen name='Signup' component={Signup}/>
-</Stack.Navigator>
-  )
+    const {isDarkMode} = useTheme()
+    const theme = isDarkMode?darkTheme:lightTheme
+	return (
+	<>
+    <StatusBar style={isDarkMode?'light':'dark'}/>
+    	<Stack.Navigator
+			screenOptions={{
+				headerShown: false,
+				animation: 'slide_from_right',
+			}}
+            >
+			<Stack.Screen name="Login" component={Login} />
+			<Stack.Screen name="HomeTab" component={HomeTabNavigator} />
+			<Stack.Screen name="OnBoarding" component={OnBoarding} />
+			<Stack.Screen name="Signup" component={Signup} />
+			<Stack.Screen name="MyPosts" component={MyPostsScreen} />
+			<Stack.Screen name="EditProfile" component={EditProfileScreen} />
+			<Stack.Screen name="Followers" component={FollowersScreen} />
+			<Stack.Screen name="Following" component={FollowingScreen} />
+		</Stack.Navigator></>
+	)
 }
 
 export default AppStackNavigator

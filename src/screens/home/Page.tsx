@@ -2,6 +2,7 @@ import { View, Text, FlatList } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PostCard from './components/PostCard'
+import { StatusBar } from 'expo-status-bar'
 
 const Home = () => {
 	const post = [
@@ -22,6 +23,13 @@ const Home = () => {
 			title: 'Post 1',
 			content: 'This is the content of post 1',
 			image: require('../../../assets/images/l3.jpg'),
+		},
+		{
+			id: 399,
+			title: 'Post 1',
+			content: 'This is the content of post 1',
+			image: require('../../../assets/video/v1.mp4'),
+            type:'video'
 		},
 
 		{
@@ -58,17 +66,17 @@ const Home = () => {
 		},
 	]
 	return (
-		<SafeAreaView className='bg-red-500 flex-1 '>
-			<FlatList
+		<>
+        <StatusBar style='dark'/>
+        	<FlatList
 				data={post}
 				renderItem={({ item }) => <PostCard post={item} />}
 				keyExtractor={(item) => item.id.toString()}
                 snapToAlignment='start'
                 decelerationRate='fast'
 				pagingEnabled
-               contentContainerStyle = {{backgroundColor:'indigo',gap:0}}
 			/>
-		</SafeAreaView>
+        </>
 	)
 }
 
