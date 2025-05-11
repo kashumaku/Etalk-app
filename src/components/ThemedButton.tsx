@@ -5,7 +5,7 @@ import {
 	TouchableOpacityProps,
 } from 'react-native'
 import React, { FC } from 'react'
-import { darkTheme, lightTheme } from '../constants/color'
+import { darkTheme, lightTheme } from '../theme/color'
 import { useTheme } from '../../context/themeContext'
 import ThemedText from './ThemedText'
 import ThemedView from './ThemedView'
@@ -18,11 +18,11 @@ const ThemedButton: FC<ThemedButtonProps> = (prop) => {
 	return (
 		<TouchableOpacity
 			{...prop}
-			className={`${prop.className} bg-golden `}
+			className={`${prop.className} bg-accent `}
 			style={[prop?.style, { backgroundColor: theme.accent }]}
 		>
 			{prop?.children}
-			<ThemedText>{prop?.title}</ThemedText>
+			{prop.title&&<ThemedText>{prop?.title}</ThemedText>}
 		</TouchableOpacity>
 	)
 }
