@@ -1,6 +1,6 @@
 import { View, Text, ViewProps } from 'react-native'
 import React, { FC } from 'react'
-import { useTheme } from '../../context/themeContext'
+import { useTheme } from '../context/themeContext'
 import { darkTheme, lightTheme } from '../theme/color'
 
 const ThemedView: FC<ViewProps> = (prop) => {

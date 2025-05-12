@@ -20,7 +20,7 @@ module.exports = {
             dark: "#111827", // Example color
             white: "#FFFFFF", // Example color
             black: "#000000", // Example color
-       golden:'#FFD700', // Example color
+       accent:'#FFD700', // Example color
         }
       },
       darkMode: 'class', // Enable dark mode

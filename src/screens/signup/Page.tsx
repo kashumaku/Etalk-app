@@ -115,9 +115,9 @@ const Signup = () => {
 					onPress={handleSignup}
 					className="items-center justify-center p-4 mt-5 rounded-lg "
 				>
-					<ThemedText className="text-base font-bold">
+					<Text className="text-base font-bold">
 						Sign Up
-					</ThemedText>
+					</Text>
 				</ThemedButton>
 			</View>
 			<View className="flex-row items-center gap-1">

@@ -11,12 +11,17 @@ import {
 import React, { useEffect, useRef, useState } from 'react'
 import ThemedView from '../../../components/ThemedView'
 import ThemedText from '../../../components/ThemedText'
-import { useTheme } from '../../../../context/themeContext'
+import { useTheme } from '../../../context/themeContext'
 import ThemedButton from '../../../components/ThemedButton'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Video, { VideoRef } from 'react-native-video'
+import { Feather } from '@expo/vector-icons'
+import Comment from './Comment'
+import { useNavigation } from '@react-navigation/native'
+import { AppStackParams } from '../../../types/navigatorParams/AppStackParams'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 const VideoPlayerCard = ({ post }: { post: any }) => {
 	const [isPlaying, setIsPlaying] = useState(true)
@@ -61,88 +66,109 @@ const VideoPlayerCard = ({ post }: { post: any }) => {
 		</View>
 	)
 }
-const PostCard = ({ post }: { post: any }) => {
-	const { toggleTheme } = useTheme()
-	const { height, width } = Dimensions.get('window')
-	const [isLiked, setIsLiked] = useState(false)
-	const [showCommentModal, setShowCommentModal] = useState(false)
-	const toggleLike = () => {
-		setIsLiked(!isLiked)
-	}
+
+const PostCard = ({ item }: any) => {
+	const [showFullCaption, setShowFullCaption] = useState(false)
+	const [showComment, setShowComment] = useState(false)
+	const navigation =
+		useNavigation<NativeStackNavigationProp<AppStackParams>>()
+	const { height: screenHeight } = Dimensions.get('window')
+	const postHeight = screenHeight - 30
 	return (
-		<ThemedView
-			className="items-center justify-center "
-			style={{
-				height,
-				width,
-			}}
+		<View
+			className="relative w-full bg-black"
+			style={{ height: postHeight }}
 		>
-			{post?.type == 'video' ? (
-				<VideoPlayerCard post={post} />
-			) : (
-				<Image source={post.image} className="w-full h-[100%]" />
-			)}
-			{/* caption */}
-			<View className='absolute px-5 pb-20 bottom-0 bg-accent/20 w-screen'>
-				<View className='flex-row items-end gap-3'>
-					<View className="w-14 h-14 rounded-full border-2 border-accent">
-						<Image
-							source={post.image}
-							className="w-full h-full rounded-full"
-							resizeMode="contain"
-						/>
+			<Image
+				source={{ uri: item.media }}
+				className="absolute top-0 left-0 w-full h-full"
+				resizeMode="cover"
+			/>
+
+			{/* Bottom overlay with caption and follow */}
+			<View className="absolute bottom-3 w-full px-4 py-6 ">
+				<View className="flex-row items-center justify-between mb-2">
+					<View className="flex-row items-center space-x-3">
+						<TouchableOpacity
+							onPress={() => navigation.navigate('UserProfile')}
+						>
+							<Image
+								source={{ uri: item.user.profilePic }}
+								className="w-10 h-10 rounded-full"
+							/>
+							<Text className="text-white font-semibold text-lg">
+								{item.user.name}
+							</Text>
+						</TouchableOpacity>
+						<TouchableOpacity className="bg-accent px-4 py-1 rounded-full">
+							<Text className="text-[#555] font-medium text-sm">
+								Follow
+							</Text>
+						</TouchableOpacity>
 					</View>
-                    <Text className='text-2xl text-gray-500 font-bold'>Kassahun Melaku</Text>
 				</View>
-				<TouchableOpacity>
-					<Text className='text-lg font-semibold text-gray-500'>
-						this is the caption i have evere sended dihosfih dsoifo{' '}
-					</Text>
-				</TouchableOpacity>
-			</View>
-			<View className="absolute right-3 bottom-32 z-50 gap-8 items-center">
 				<View>
+					<Text
+						className="text-[#EEE] text-base max-w-[80%]"
+						numberOfLines={showFullCaption ? 1000 : 2}
+					>
+						{item.caption} dkjlkksdhfosdjfjlsdkjfls djfsdjk dkjfojsd
+						sadkjof ajsdokfs askdfjoska dsjfkas dkjfsa sakdjf
+						asdjkosa kfdjgo fodkjogdkl djkfog sodkfj ksdds
+					</Text>
+					<TouchableOpacity
+						onPress={() => setShowFullCaption(!showFullCaption)}
+					>
+						<Text className="text-accent font-semibold">
+							Show {showFullCaption ? 'Less' : 'More'}
+						</Text>
+					</TouchableOpacity>
+				</View>
+			</View>
+
+			{/* Action buttons (bottom-right) */}
+			<View className="absolute bottom-20 gap-8 right-4 items-center">
+				<TouchableOpacity className="items-center">
+					<TouchableOpacity
+						onPress={() => navigation.navigate('UserProfile')}
+					>
+						<Image
+							source={{ uri: item.user.profilePic }}
+							className="w-14 h-14 rounded-full border-2 border-white"
+						/>
+						<View className="absolute bottom-0 right-0 bg-accent rounded-full p-[2px]">
+							<Feather name="plus" size={14} color="#fff" />
+						</View>
+					</TouchableOpacity>
+				</TouchableOpacity>
+
+				<TouchableOpacity className="items-center">
 					<AntDesign
-						onPress={toggleLike}
+						// onPress={toggleLike}
 						name="heart"
 						size={40}
-						color={isLiked ? '#FFD700' : '#FFF'}
+						color="#FFF"
 					/>
-					<Text className="text-xl font-semibold text-white">{isLiked ? 43 : 42}</Text>
-				</View>
-				<View>
+					<Text className="text-white text-sm">{item.likes}</Text>
+				</TouchableOpacity>
+
+				<TouchableOpacity className="items-center">
 					<Ionicons
-						onPress={() => setShowCommentModal(true)}
+						onPress={() => setShowComment(true)}
 						name="chatbubble-ellipses-sharp"
 						size={40}
 						color="#FFF"
 					/>
-					<Text className="text-xl font-semibold text-white">123</Text>
-				</View>
-				<View className="w-14 h-14 rounded-full border-2 border-accent">
-					<Image
-						source={post.image}
-						className="w-full h-full rounded-full"
-						resizeMode="contain"
-					/>
-				</View>
+					<Text className="text-white text-sm">{item.comments}</Text>
+				</TouchableOpacity>
 			</View>
-			<Modal
-				transparent
-				visible={showCommentModal}
-				onRequestClose={() => setShowCommentModal(false)}
-				animationType="slide"
-			>
-				<Pressable
-					className="flex-1 bg-black/40"
-					onPress={() => setShowCommentModal(false)}
+			{showComment && (
+				<Comment
+					onClose={() => setShowComment(false)}
+					visible={showComment}
 				/>
-				<View className="bg-white absolute bottom-0 w-full h-1/2">
-					<Text>Comments</Text>
-				</View>
-			</Modal>
-		</ThemedView>
+			)}
+		</View>
 	)
 }
-
 export default PostCard
