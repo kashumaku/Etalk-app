@@ -15,6 +15,8 @@ import { AppStackParams } from '../../types/navigatorParams/AppStackParams'
 import { useTheme } from '../../context/themeContext'
 import ThemedView from '../../components/ThemedView'
 import ThemedText from '../../components/ThemedText'
+import { observer } from 'mobx-react-lite'
+import { useStore } from '../modals/useStores'
 
 const mockPosts = Array.from({ length: 12 }, (_, i) => ({
 	id: i.toString(),
@@ -24,14 +26,16 @@ const mockPosts = Array.from({ length: 12 }, (_, i) => ({
 const screenWidth = Dimensions.get('window').width
 const postSize = screenWidth / 3
 
-export default function ProfileScreen() {
+const ProfileScreen = () => {
 	const navigation =
 		useNavigation<NativeStackNavigationProp<AppStackParams>>()
 	const insets = useSafeAreaInsets()
 	const { isDarkMode, theme, toggleTheme } = useTheme()
+	const {
+		authenticationStore: { setIsAuthenticated },
+	} = useStore()
 	const handleLogout = () => {
-		console.log('Logout tapped')
-		navigation.navigate('Login')
+		setIsAuthenticated(false)
 	}
 
 	const handleThemeToggle = () => {
@@ -171,3 +175,4 @@ export default function ProfileScreen() {
 		</ThemedView>
 	)
 }
+export default observer(ProfileScreen)

@@ -8,36 +8,52 @@ import ThemedTextInput from '../../components/ThemedTextInput'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import ThemedButton from '../../components/ThemedButton'
+import { Controller, useForm } from 'react-hook-form'
+import { gql, useMutation } from '@apollo/client'
+type FormFields = {
+	firstName: string
+	middleName: string
+	lastName: string
+	email: string
+	password: string
+	confirmPassword: string
+}
 
+const SIGNUP_MUTATION = gql`
+    mutation signup($data:UserInput){
+        signup(data:$data){
+            firstName
+        }}`
 const Signup = () => {
 	const [passwordVisible, setPasswordVisible] = useState(false)
 	const navigation =
 		useNavigation<NativeStackNavigationProp<AppStackParams>>()
-	const generateUserName = (email: string) => {
-		const [userNamePart] = email.split('@')
+        const [triggerSignup,{loading}] = useMutation(SIGNUP_MUTATION)
 
-		return '@' + userNamePart
-	}
-	const handleSignup = () => {
-		const payload = {
-			firstName: 'Kassahun',
-			middleName: 'Melaku',
-			lastName: 'Endalew',
-			email: 'kassahun@email.com',
-			password: '1234',
-			userName: generateUserName('kassahun@email.com'),
-		}
-		fetch('http://10.0.2.2:5000/api/user', {
-			method: 'post',
-			body: JSON.stringify(payload),
-            headers:{
-                'Content-Type':'application/json'
+	const {
+		control,
+		formState: { errors },
+		handleSubmit,
+	} = useForm<FormFields>()
+	const handleSignup = async(data: FormFields) => {
+	console.log(data)
+		try {
+            const payload = {
+                firstName: data.firstName,
+                middleName: data.middleName,
+                lastName: data.lastName,
+                email: data.email,
+               password:data.password
             }
-		})
-			.then((res) => {
-				console.log('user created')
-			})
-			.catch((err) => console.log('Error creating user', err))
+            const res = await triggerSignup({variables:{data:payload}})
+            navigation.navigate('Login')
+            console.log("User signed up ", res)
+            
+        } catch (err:any) {
+            console.log("Error signing up ", err)
+            alert(err?.message)
+            
+        }
 	}
 	return (
 		<ThemedView className="flex-1 items-center justify-center p-5 gap-10">
@@ -50,74 +66,138 @@ const Signup = () => {
 				</ThemedText>
 			</View>
 			<View className="w-[80%] gap-3">
-				<View className="w-full border-b border-accent">
-					<ThemedTextInput placeholder="First Name" />
-				</View>
-				<View className="w-full border-b border-accent">
-					<ThemedTextInput placeholder="Middle Name" />
-				</View>
-				<View className="w-full border-b border-accent">
-					<ThemedTextInput placeholder="Last Name" />
-				</View>
-				<View className="w-full border-b border-accent">
-					<ThemedTextInput placeholder="Email" />
-				</View>
-				<View className="w-full border-b border-accent flex-row items-center">
-					<ThemedTextInput
-						placeholder="Password"
-						className="flex-1"
-						secureTextEntry={!passwordVisible}
-					/>
-					<TouchableOpacity
-						onPress={() => setPasswordVisible(!passwordVisible)}
-					>
-						{passwordVisible ? (
-							<Ionicons
-								name="eye-outline"
-								size={24}
-								color="#FFD700"
+				<Controller
+					control={control}
+					rules={{ required: 'First name is required' }}
+					name="firstName"
+					render={({ field: { onChange, value } }) => (
+						<View className="w-full border-b border-accent">
+							<ThemedTextInput
+								placeholder="First Name"
+								value={value}
+								onChangeText={(text) => onChange(text)}
 							/>
-						) : (
-							<Ionicons
-								name="eye-off-outline"
-								size={24}
-								color="#FFD700"
+						</View>
+					)}
+				/>
+				<Controller
+					control={control}
+					rules={{ required: 'Middle name is required' }}
+					name="middleName"
+					render={({ field: { onChange, value } }) => (
+						<View className="w-full border-b border-accent">
+							<ThemedTextInput
+								placeholder="Middle Name"
+								value={value}
+								onChangeText={(text) => onChange(text)}
 							/>
-						)}
-					</TouchableOpacity>
-				</View>
-				<View className="w-full border-b border-accent flex-row items-center">
-					<ThemedTextInput
-						placeholder="Confirm Password"
-						className="flex-1"
-						secureTextEntry={!passwordVisible}
-					/>
-					<TouchableOpacity
-						onPress={() => setPasswordVisible(!passwordVisible)}
-					>
-						{passwordVisible ? (
-							<Ionicons
-								name="eye-outline"
-								size={24}
-								color="#FFD700"
+						</View>
+					)}
+				/>
+				<Controller
+					control={control}
+					rules={{ required: 'Last name is required' }}
+					name="lastName"
+					render={({ field: { onChange, value } }) => (
+						<View className="w-full border-b border-accent">
+							<ThemedTextInput
+								placeholder="Last Name"
+								value={value}
+								onChangeText={(text) => onChange(text)}
 							/>
-						) : (
-							<Ionicons
-								name="eye-off-outline"
-								size={24}
-								color="#FFD700"
+						</View>
+					)}
+				/>
+				<Controller
+					control={control}
+					rules={{ required: 'Emailis required' }}
+					name="email"
+					render={({ field: { onChange, value } }) => (
+						<View className="w-full border-b border-accent">
+							<ThemedTextInput
+								placeholder="Email"
+								value={value}
+								onChangeText={(text) => onChange(text)}
 							/>
-						)}
-					</TouchableOpacity>
-				</View>
+						</View>
+					)}
+				/>
+				<Controller
+					control={control}
+					rules={{ required: 'Password is required' }}
+					name="password"
+					render={({ field: { onChange, value } }) => (
+						<View className="w-full border-b border-accent flex-row items-center">
+							<ThemedTextInput
+								placeholder="Password"
+								className="flex-1"
+								secureTextEntry={!passwordVisible}
+								value={value}
+								onChangeText={(text) => onChange(text)}
+							/>
+							<TouchableOpacity
+								onPress={() =>
+									setPasswordVisible(!passwordVisible)
+								}
+							>
+								{passwordVisible ? (
+									<Ionicons
+										name="eye-outline"
+										size={24}
+										color="#FFD700"
+									/>
+								) : (
+									<Ionicons
+										name="eye-off-outline"
+										size={24}
+										color="#FFD700"
+									/>
+								)}
+							</TouchableOpacity>
+						</View>
+					)}
+				/>
+				<Controller
+					control={control}
+					rules={{ required: 'Confirm password is required' }}
+					name="confirmPassword"
+					render={({ field: { onChange, value } }) => (
+						<View className="w-full border-b border-accent flex-row items-center">
+							<ThemedTextInput
+								placeholder="Password"
+								className="flex-1"
+								secureTextEntry={!passwordVisible}
+								value={value}
+								onChangeText={(text) => onChange(text)}
+							/>
+							<TouchableOpacity
+								onPress={() =>
+									setPasswordVisible(!passwordVisible)
+								}
+							>
+								{passwordVisible ? (
+									<Ionicons
+										name="eye-outline"
+										size={24}
+										color="#FFD700"
+									/>
+								) : (
+									<Ionicons
+										name="eye-off-outline"
+										size={24}
+										color="#FFD700"
+									/>
+								)}
+							</TouchableOpacity>
+						</View>
+					)}
+				/>
 
 				<ThemedButton
-					onPress={handleSignup}
+					onPress={handleSubmit(handleSignup)}
 					className="items-center justify-center p-4 mt-5 rounded-lg "
 				>
-					<Text className="text-base font-bold">
-						Sign Up
-					</Text>
+					<Text className="text-base font-bold">Sign Up</Text>
 				</ThemedButton>
 			</View>
 			<View className="flex-row items-center gap-1">
